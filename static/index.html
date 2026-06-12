@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Rate Limiting Microservice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Centralized Rate Limiter</h1>
+            <p class="subtitle">High-performance Standalone Microservice</p>
+        </header>
+
+        <main class="dashboard-grid">
+            <!-- Documentation / Guide Panel -->
+            <section class="glass-panel guide-panel">
+                <div class="tab-headers" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border);">
+                    <button class="tab-btn active" data-target="main-tab-docs" data-group="main" style="font-size: 1.1rem; padding: 1rem 1.5rem;">Documentation</button>
+                    <button class="tab-btn" data-target="main-tab-integration" data-group="main" style="font-size: 1.1rem; padding: 1rem 1.5rem;">Integration</button>
+                </div>
+                
+                <div class="tab-content active" id="main-tab-docs">
+                    <div class="guide-content">
+                        <h3>Overview</h3>
+                        <p>This is a centralized <strong>Rate Limiting Microservice</strong> built in Go. It allows all of your web projects (frontends, backends, APIs) to share a single, lightning-fast <strong>Token Bucket</strong> rate limiter, tracking usage via any identifier (like a User ID or IP).</p>
+
+                        <h3>How to use it with other projects</h3>
+                        <p>Simply make an HTTP request to this microservice before fulfilling a user's request in your own project.</p>
+                        <ol style="margin-left: 1.5rem; color: #94a3b8; margin-bottom: 1rem;">
+                            <li style="margin-bottom: 0.5rem;">Your backend receives a request from a user.</li>
+                            <li style="margin-bottom: 0.5rem;">Your backend pauses to send a <code>POST /api/check</code> to this service.</li>
+                            <li style="margin-bottom: 0.5rem;">If the microservice returns <code>allowed: true</code>, your backend proceeds. If <code>false</code>, your backend blocks the user!</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="main-tab-integration">
+                    <div class="guide-content">
+                        <div class="code-tabs">
+                            <div class="tab-headers">
+                                <button class="tab-btn active" data-target="tab-js" data-group="code">Node.js / JS</button>
+                                <button class="tab-btn" data-target="tab-python" data-group="code">Python</button>
+                            </div>
+                            <div class="tab-content active" id="tab-js">
+                                <pre><code class="language-javascript">// In your Node.js/Next.js/Express backend
+const checkRateLimit = async (userId) => {
+  const response = await fetch('http://localhost:8080/api/check', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ identifier: userId })
+  });
+  
+  const data = await response.json();
+  if (!data.allowed) {
+    throw new Error("Rate limit exceeded!");
+  }
+  // Proceed with fulfilling the request
+};</code></pre>
+                            </div>
+                            <div class="tab-content" id="tab-python">
+                                <pre><code class="language-python"># In your Python (Django/FastAPI) backend
+import requests
+
+def check_rate_limit(user_id):
+    response = requests.post(
+        'http://localhost:8080/api/check',
+        json={'identifier': user_id}
+    )
+    
+    data = response.json()
+    if not data.get('allowed'):
+        raise Exception("Rate limit exceeded!")
+    # Proceed with fulfilling the request</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Live Usage Logs Panel -->
+            <section class="glass-panel sandbox-panel">
+                <div class="sandbox-header">
+                    <h2>Live Usage Logs</h2>
+                    <span class="status-indicator online">System Online</span>
+                </div>
+
+                <div class="logs-container">
+                    <table class="usage-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Identifier</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody">
+                            <!-- Logs injected by script.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="/script.js"></script>
+</body>
+</html>
